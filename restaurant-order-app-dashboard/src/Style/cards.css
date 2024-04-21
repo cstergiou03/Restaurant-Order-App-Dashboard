@@ -3,17 +3,50 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: hsl(230, 20%, 35%);
-    width: 280px;
-    height: 190px;
+    background-color: hsl(208, 100%, 97%);
+    width: 260px;
+    height: 180px;
     border-radius: 20px;
     margin: 1.5em;
     box-shadow: 5px 8px 3px hsl(230, 20%, 10%);
-    color: aliceblue;
+    color: hsl(230, 20%, 35%);
     font-size: 1rem;
     font-weight: bold;
 }
 
 .card-container:hover{
     box-shadow: 14px 12px 3px hsl(230, 20%, 12%);
+}
+
+.add-button{
+    width: 110px;
+    height: 40px;
+    border-radius: 18px;
+    background-color: hsl(337, 29%, 49%);
+    color: aliceblue;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    outline: none;
+}
+
+.add-button:hover{
+    background-color: hsl(337, 29%, 54%);
+    cursor: pointer;
+}
+
+@keyframes slideIn {
+    0% {
+      opacity: 0;
+      transform: translateY(50px) scale(0.5);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+}
+  
+  
+.card-container {
+    animation: slideIn 0.5s ease forwards;
 }
