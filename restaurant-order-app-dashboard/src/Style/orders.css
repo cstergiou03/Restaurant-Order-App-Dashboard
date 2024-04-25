@@ -1,0 +1,28 @@
+.order-summary{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 300px;
+    height: 92vh; 
+    background-color: hsl(208, 100%, 97%);
+    overflow-y: auto;
+    border-radius: 18px;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+  
+::-webkit-scrollbar-track {
+    background: #f1f1f100;
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: hsl(0, 0%, 58%);
+    border-radius: 8px;
+}
+  
+::-webkit-scrollbar-thumb:hover {
+    background: hsl(0, 0%, 90%);
+}

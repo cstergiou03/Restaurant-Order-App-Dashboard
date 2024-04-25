@@ -3,8 +3,10 @@ import Cards from "./Cards";
 import React, { useState, useEffect, useRef } from "react"
 import Chart from "chart.js/auto"
 
+
 function Dashboard() {
 
+    
     const [orders, setOrders] = useState([]);
     const [foods, setFoods] = useState([]);
     const [showButton, setShowButton] = useState(false);
@@ -12,46 +14,56 @@ function Dashboard() {
     const chartRefOrders = useRef(null);
     const chartRefIncome = useRef(null);
 
+
     useEffect(() => {
-        fetch('../foods.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error fetching foods');
-                }
-                return response.json();
-            })
-            .then(data => setFoods(data))
-            .catch(error => console.error('Error fetching foods:', error));
-    }, []);
-    
+        fetch('http://localhost:3000/api/orders')
+        .then(response => {
+            if (!response.ok) {
+            throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setOrders(data);
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+    }, [])
+
+
     useEffect(() => {
-        fetch('../orders.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error fetching orders');
-                }
-                return response.json();
-            })
-            .then(data => setOrders(data))
-            .catch(error => console.error('Error fetching orders:', error));
-    }, []);
+        fetch('http://localhost:3000/api/foods')
+        .then(response => {
+            if (!response.ok) {
+            throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setFoods(data);
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+    }, [orders])
 
     useEffect(() => {
         if (chartRefOrders.current) {
             const ctx = chartRefOrders.current.getContext("2d");
-            const oneWeekAgo = new Date();
-            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-        
-            const lastWeekOrders = orders.filter(order => {
-                return new Date(order.order_date) >= oneWeekAgo;
-            });
-        
-            const uniqueDates = new Set(lastWeekOrders.map(order => order.order_date));
-            let dates = [...uniqueDates];
-            dates = dates.reverse();
-        
-            const orderCounts = dates.map(date => {
-                const ordersOnDate = lastWeekOrders.filter(order => order.order_date === date);
+            const today = new Date();
+            const lastFiveDays = [];
+            
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                lastFiveDays.unshift(date.toISOString().split('T')[0])
+            }
+            
+            const lastFiveDaysOrders = orders.filter(order => lastFiveDays.includes(order.order_date));
+            
+            const orderCounts = lastFiveDays.map(date => {
+                const ordersOnDate = lastFiveDaysOrders.filter(order => order.order_date === date);
                 return ordersOnDate.length;
             });
         
@@ -62,7 +74,7 @@ function Dashboard() {
             const chart = new Chart(ctx, {
                 type: "line",
                 data: {
-                    labels: dates,
+                    labels: lastFiveDays,
                     datasets: [{
                         label: "Orders",
                         data: orderCounts,
@@ -93,19 +105,19 @@ function Dashboard() {
     useEffect(() => {
         if (chartRefIncome.current) {
             const ctx = chartRefIncome.current.getContext("2d");
-            const oneWeekAgo = new Date();
-            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-        
-            const lastWeekOrders = orders.filter(order => {
-                return new Date(order.order_date) >= oneWeekAgo;
-            });
-        
-            const uniqueDates = new Set(lastWeekOrders.map(order => order.order_date));
-            let dates = [...uniqueDates];
-            dates = dates.reverse();
-        
-            const incomePerDay = dates.map(date => {
-                const ordersOnDate = lastWeekOrders.filter(order => order.order_date === date);
+            const today = new Date();
+            const lastSevenDays = [];
+            
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                lastSevenDays.unshift(date.toISOString().split('T')[0]);
+            }
+            
+            const lastSevenDaysOrders = orders.filter(order => lastSevenDays.includes(order.order_date));
+            
+            const incomePerDay = lastSevenDays.map(date => {
+                const ordersOnDate = lastSevenDaysOrders.filter(order => order.order_date === date);
                 return ordersOnDate.reduce((total, order) => total + order.total_price, 0);
             });
         
@@ -116,7 +128,7 @@ function Dashboard() {
             const chart = new Chart(ctx, {
                 type: "line",
                 data: {
-                    labels: dates,
+                    labels: lastSevenDays,
                     datasets: [{
                         label: "Income",
                         data: incomePerDay,
@@ -142,6 +154,7 @@ function Dashboard() {
             chartRefIncome.current.chart = chart;
         }
     }, [orders]);
+    
 
     function findMostOrderedProduct(orders) {
         const productCount = {};
@@ -187,7 +200,7 @@ function Dashboard() {
             <div className="statistics-cards">
                 <Cards name="Total Orders" statistic={orders.length} unit="Orders"  showButton={false} handleClick={handleTotalOrdersClick}/>
                 <Cards name="Total Income" statistic={orders.length > 0 ? orders.reduce((total, order) => total + order.total_price, 0).toFixed(2) : 0} unit="€" showButton={false}/>
-                <Cards name="Total Options" statistic={foods.length} unit="Dishes" showButton={true} handleButtonClick={toggleButton} />
+                <Cards name="Total Options" statistic={foods.length} unit="Dishes" showButton={true} handleButtonClick={toggleButton}/>
                 <Cards name="Most Ordered" statistic={findMostOrderedProduct(orders)} showButton={false}/>
             </div>
             <div className="charts-container">

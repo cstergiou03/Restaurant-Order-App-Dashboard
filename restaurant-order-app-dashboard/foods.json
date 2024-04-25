@@ -1,7 +1,0 @@
-[
-    { "name": "Spaghetti", "price": 6, "path": "../src/assets/spaggeti.jpg" },
-    { "name": "Pizza", "price": 8.5, "path": "../src/assets/pizza.jpg" },
-    { "name": "Gyros", "price": 4, "path": "../src/assets/gyros.jpg" },
-    { "name": "Burger", "price": 6.5, "path": "../src/assets/burger.jpg" },
-    { "name": "Souvlaki", "price": 1.8, "path": "../src/assets/souvlakia.jpg" }
-]
